@@ -1,0 +1,10 @@
+{
+  "name": "vsm-search",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "string-strip-html": "^8.2.1"
+  },
+  "author": "Eduardo Oliveira <eduardo_y05@outlook.com>"
+}
