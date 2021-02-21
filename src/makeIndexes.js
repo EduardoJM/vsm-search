@@ -1,19 +1,14 @@
-const fs = require('fs');
-const { processPost } = require('./core');
-
-fs.readFile('./posts/data.json', {
-    encoding: 'utf-8'
-}, (err, data) => {
-    if (err) {
+function createIndexes(callback, data) {
+    if (data) {
+        const { posts } = data;
+        const output = posts.map((p) => processPost(p));
+        callback(data, output);
         return;
     }
-    const { posts } = JSON.parse(data);
-    const output = posts.map((p) => processPost(p));
-    fs.writeFile('./posts/indexes.json', JSON.stringify(output), (err) => {
-        if (err) {
-            console.log('Can\'t create indexes file: ', err);
-            return;
-        }
-        console.log('Criado.')
-    });
-});
+    const req = new XMLHttpRequest();
+    req.open('GET', './posts/data.json');
+    req.onload = function() {
+        createIndexes(callback, JSON.parse(this.responseText));
+    }
+    req.send();
+}

@@ -1,4 +1,4 @@
-const { stripHtml } = require("string-strip-html");
+const { stripHtml } = stringStripHtml;
 
 function processPost(post) {
     const { id, text } = post;
@@ -46,14 +46,10 @@ function norm(data) {
 
 function cos(doc1, doc2) {
     const dot = dotProduct(doc1, doc2);
+    if (dot === 0) {
+        return 0;
+    }
     const norm1 = norm(doc1);
     const norm2 = norm(doc2);
     return dot / (norm1 * norm2);
 }
-
-module.exports = {
-    processPost,
-    dotProduct,
-    norm,
-    cos
-};

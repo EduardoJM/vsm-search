@@ -1,25 +1,56 @@
-const fs = require('fs');
-const { processPost, cos } = require('./core');
+function filter(array, func) {
+    const filtered = [];
+    for (let i = 0; i < array.length; i += 1) {
+        if (func(array[i], i)) {
+            filtered.push(array[i]);
+        }
+    }
+    return filtered;
+}
 
-const searchQuery = 'milagre';
+function map(array, func) {
+    const maped = [];
+    for (let i = 0; i < array.length; i += 1) {
+        maped.push(func(array[i], i));
+    }
+    return maped;
+}
 
-fs.readFile('./posts/indexes.json', {
-    encoding: 'utf-8'
-}, (err, data) => {
-    if (err) {
+function makeSearch(searchQuery, postIndexes, posts) {
+    if (postIndexes.length !== posts.length) {
         return;
     }
-
-    const posts = JSON.parse(data);
 
     const queryData = processPost({
         id: -1,
         text: searchQuery,
     });
 
-    posts.forEach((post) => {
+    const postsResults = [];
+    for (let index = 0; index < postIndexes.length; index++) {
+        const post = postIndexes[index];
         const cossine = cos(post.indexes, queryData.indexes);
-        console.log(cossine);
+        if (cossine > 0) {
+            postsResults.push({
+                artist: posts[index].artist,
+                title: posts[index].title,
+                text: posts[index].text,
+                cos: cossine,
+                indexes: post.indexes,
+            });
+        }
+    }
+
+    const sorted = postsResults.sort((a, b) => {
+        const cosA = cos(a.indexes, queryData.indexes);
+        const cosB = cos(b.indexes, queryData.indexes);
+        if (cosA < cosB) {
+            return 1;
+        } else if (cosA > cosB) {
+            return -1;
+        }
+        return 0;
     });
 
-});
+    return sorted;
+}
